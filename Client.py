@@ -3,12 +3,19 @@ import threading
 from datetime import datetime, UTC
 from time import sleep
 
+from rich.console import Console
+from rich.text import Text
+from rich.panel import Panel
+
+
 import genkey
 import cryption
 
 connection: socket.socket = None
 priv_key = None
 connection_pub_key = None
+
+console = Console()
 
 def receive_messages(ip):
     global connection, priv_key
@@ -31,8 +38,17 @@ def receive_messages(ip):
                 encrypted_msg = encrypted_msg[:-5]
                 msg = cryption.decrypt_plaintext(priv_key, encrypted_msg)
 
-                print(f"[ {ip} ]: {msg}\n")
-                print(">> ", end="", flush=True)
+                message = Text()
+                message.append(msg, style="bold bright_green")
+
+                message_panel = Panel(
+                    message,
+                    title=f"[ {ip} ]",
+                    border_style="green",
+                    padding=(1, 2)
+                )
+
+                console.print(message_panel)
 
         except (ConnectionResetError, ConnectionAbortedError):
             break
@@ -40,15 +56,29 @@ def receive_messages(ip):
 def send_messages():
     global connection, connection_pub_key
 
+    print("\nEnter your message below. Press [Enter] to send.\n\n")
     while True:
         try:
-            msg = input(">> ").strip()
+            msg = input("").strip()
             if not msg:
                 continue
 
+            print("\033[A\033[K", end="", flush=True)
+
             encrypted_msg = cryption.encrypt_plaintext(connection_pub_key, msg)
             connection.sendall(encrypted_msg + b"<EOM>") # already bytes
-            print(f">> [     YOU     ]: {msg}\n")
+
+            message = Text()
+            message.append(msg, style="bold bright_blue")
+
+            message_panel = Panel(
+                message,
+                title=f"[      YOU      ]",
+                border_style="blue",
+                padding=(1, 2)
+            )
+
+            console.print(message_panel)
         except (BrokenPipeError, ConnectionResetError):
             break
 
@@ -159,7 +189,7 @@ def main():
         handshake()
         message_loop(ip)
     except KeyboardInterrupt:
-        print("Closing messenger...")
+        print("\nClosing messenger...")
         exit(0)
 
 if __name__ == "__main__":
