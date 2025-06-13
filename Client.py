@@ -1,13 +1,76 @@
 import socket
+import threading
 from datetime import datetime, UTC
 from time import sleep
 
 import genkey
 import cryption
 
-connection = None
+connection: socket.socket = None
 priv_key = None
 connection_pub_key = None
+
+def receive_messages(ip):
+    global connection, priv_key
+
+    while True:
+        try:
+            encrypted_msg = b""
+            while True:
+                try:
+                    chunk = connection.recv(1024)
+                    if not chunk:
+                        return
+                    encrypted_msg += chunk
+                    if encrypted_msg.endswith(b"<EOM>"):
+                        break
+                except socket.timeout:
+                    continue
+
+            if encrypted_msg:
+                encrypted_msg = encrypted_msg[:-5]
+                msg = cryption.decrypt_plaintext(priv_key, encrypted_msg)
+
+                print(f"[ {ip} ]: {msg}\n")
+                print(">> ", end="", flush=True)
+
+        except (ConnectionResetError, ConnectionAbortedError):
+            break
+
+def send_messages():
+    global connection, connection_pub_key
+
+    while True:
+        try:
+            msg = input(">> ").strip()
+            if not msg:
+                continue
+
+            encrypted_msg = cryption.encrypt_plaintext(connection_pub_key, msg)
+            connection.sendall(encrypted_msg + b"<EOM>") # already bytes
+            print(f">> [     YOU     ]: {msg}\n")
+        except (BrokenPipeError, ConnectionResetError):
+            break
+
+def message_loop(ip):
+    global connection, connection_pub_key, priv_key
+
+    connection.settimeout(None)
+
+    receive_thread = threading.Thread(target=receive_messages, args=(ip,), daemon=True)
+    receive_thread.start()
+
+    send_thread = threading.Thread(target=send_messages, daemon=True)
+    send_thread.start()
+
+    try:
+        while receive_thread.is_alive() and send_thread.is_alive():
+            sleep(1)
+    except KeyboardInterrupt:
+        receive_thread.join()
+        send_thread.join()
+        connection.close()
+        raise KeyboardInterrupt
 
 def handshake():
     global connection, connection_pub_key, priv_key
@@ -94,8 +157,10 @@ def main():
 
         print(f"Successfully connected to {ip}:4500 @ {datetime.now(UTC)} UTC")
         handshake()
+        message_loop(ip)
     except KeyboardInterrupt:
         print("Closing messenger...")
+        exit(0)
 
 if __name__ == "__main__":
     main()
