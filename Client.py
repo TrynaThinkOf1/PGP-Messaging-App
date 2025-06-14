@@ -2,6 +2,7 @@ import socket
 import threading
 import json
 import re
+from requests import get
 from datetime import datetime, UTC
 from time import sleep
 from os import system
@@ -258,6 +259,10 @@ def send_messages(name):
 
             print("\033[A\033[K", end="", flush=True)
 
+            if msg.startswith("!"):
+                run_command(msg[1:])
+                continue
+
             emoji_instances = re.findall(r"<emoji:[^>]+>", msg)
             for instance in emoji_instances:
                 if instance not in emojis.keys():
@@ -376,8 +381,15 @@ def connect(ip):
 
 
 def command_line_utility():
-    pass
+    system("clear")
+    print_header()
+    print("\n\n")
 
+    prompt = "self@" + get("http://api.ipify.org").text + " #> "
+
+    while True:
+        command = input(prompt)
+        run_command(command)
 
 
 def print_header():
@@ -446,6 +458,10 @@ def main():
                     print(f"Successfully connected to {contact}@{ip}:4500 | {datetime.now(UTC)} UTC")
                     handshake()
                     message_loop(contact)
+
+            case "3":
+                command_line_utility()
+
             case "4":
                 raise KeyboardInterrupt
     except KeyboardInterrupt:
