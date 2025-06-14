@@ -40,7 +40,8 @@
   "<emoji:face_with_rolling_eyes>": "🙄",
   "<emoji:grimacing_face>": "😬",
   "<emoji:lying_face>": "🤥",
-  #<emoji: Hand gestures
+
+
   "<emoji:waving_hand>": "👋",
   "<emoji:raised_back_of_hand>": "🤚",
   "<emoji:hand_with_fingers_splayed>": "🖐",
@@ -73,7 +74,7 @@
   "<emoji:handshake>": "🤝",
   "<emoji:folded_hands>": "🙏",
 
-  #<emoji: Animals & Nature
+
   "<emoji:dog_face>": "🐶",
   "<emoji:cat_face>": "🐱",
   "<emoji:mouse_face>": "🐭",
@@ -127,7 +128,7 @@
   "<emoji:fallen_leaf>": "🍂",
   "<emoji:leaf_fluttering_in_wind>": "🍃",
 
-  #<emoji: Objects
+
   "<emoji:fire>": "🔥",
   "<emoji:droplet>": "💧",
   "<emoji:water_wave>": "🌊",
@@ -178,5 +179,5 @@
   "<emoji:notebook>": "📓",
   "<emoji:notebook_with_decorative_cover>": "📔",
   "<emoji:ledger>": "📒",
-  "<emoji:page_with_curl>": "📃",
+  "<emoji:page_with_curl>": "📃"
 }

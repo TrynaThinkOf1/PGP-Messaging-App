@@ -22,188 +22,11 @@ connection_pub_key = None
 
 console = Console()
 
-emojis = {
-"grinning_face>": "😀",
-       "<emoji:grinning_face_with_big_eyes>": "😃",                                                                                               
-       "<emoji:grinning_face_with_smiling_eyes>": "😄",                                                                                           
-       "<emoji:beaming_face_with_smiling_eyes>": "😁",                                                                                            
-       "<emoji:grinning_squinting_face>": "😆",                                                                                                   
-       "<emoji:grinning_face_with_sweat>": "😅",                                                                                                  
-       "<emoji:rolling_on_the_floor_laughing>": "🤣",                                                                                             
-       "<emoji:face_with_tears_of_joy>": "😂",                                                                                                    
-       "<emoji:slightly_smiling_face>": "🙂",                                                                                                     
-       "<emoji:upside_down_face>": "🙃",   
-       "<emoji:winking_face>": "😉", 
-       "<emoji:smiling_face_with_smiling_eyes>": "😊",                                                                                            
-       "<emoji:smiling_face_with_halo>": "😇",                                                                                                    
-       "<emoji:smiling_face_with_hearts>": "🥰",                                                                                                  
-       "<emoji:smiling_face_with_heart_eyes>": "😍",                                                                                              
-       "<emoji:star_struck>": "🤩",  
-       "<emoji:face_blowing_a_kiss>": "😘",
-       "<emoji:kissing_face>": "😗", 
-       "<emoji:smiling_face>": "☺️",  
-       "<emoji:kissing_face_with_closed_eyes>": "😚",                                                                                             
-       "<emoji:kissing_face_with_smiling_eyes>": "😙",                                                                                            
-       "<emoji:face_savoring_food>": "😋", 
-       "<emoji:face_with_tongue>": "😛",   
-       "<emoji:winking_face_with_tongue>": "😜",                                                                                                  
-       "<emoji:zany_face>": "🤪",    
-       "<emoji:squinting_face_with_tongue>": "😝",                                                                                                
-       "<emoji:money_mouth_face>": "🤑",   
-       "<emoji:hugging_face>": "🤗", 
-       "<emoji:face_with_hand_over_mouth>": "🤭",                                                                                                 
-       "<emoji:shushing_face>": "🤫",
-       "<emoji:thinking_face>": "🤔",
-       "<emoji:zipper_mouth_face>": "🤐",  
-       "<emoji:face_with_raised_eyebrow>": "🤨",                                                                                                  
-       "<emoji:neutral_face>": "😐", 
-       "<emoji:expressionless_face>": "😑",
-       "<emoji:face_without_mouth>": "😶", 
-       "<emoji:smirking_face>": "😏",
-       "<emoji:unamused_face>": "😒",
-       "<emoji:face_with_rolling_eyes>": "🙄",                                                                                                    
-       "<emoji:grimacing_face>": "😬",                       
-       "<emoji:lying_face>": "🤥",
-       #<emoji: Hand gestures       
-       "<emoji:waving_hand>": "👋",  
-       "<emoji:raised_back_of_hand>": "🤚",
-       "<emoji:hand_with_fingers_splayed>": "🖐",                                                                                                  
-       "<emoji:raised_hand>": "✋",  
-       "<emoji:vulcan_salute>": "🖖",
-       "<emoji:ok_hand>": "👌",      
-       "<emoji:pinched_fingers>": "🤌",    
-       "<emoji:pinching_hand>": "🤏",
-       "<emoji:victory_hand>": "✌️",  
-       "<emoji:crossed_fingers>": "🤞",    
-       "<emoji:love_you_gesture>": "🤟",   
-       "<emoji:sign_of_the_horns>": "🤘",  
-       "<emoji:call_me_hand>": "🤙", 
-       "<emoji:backhand_index_pointing_left>": "👈",                                                                                              
-       "<emoji:backhand_index_pointing_right>": "👉",                                                                                             
-       "<emoji:backhand_index_pointing_up>": "👆",                                                                                                
-       "<emoji:middle_finger>": "🖕",
-       "<emoji:backhand_index_pointing_down>": "👇",                                                                                              
-       "<emoji:index_pointing_up>": "☝️",   
-       "<emoji:thumbs_up>": "👍",    
-       "<emoji:thumbs_down>": "👎",  
-       "<emoji:raised_fist>": "✊",  
-       "<emoji:oncoming_fist>": "👊",
-       "<emoji:left_facing_fist>": "🤛",   
-       "<emoji:right_facing_fist>": "🤜",  
-       "<emoji:clapping_hands>": "👏",     
-       "<emoji:raising_hands>": "🙌",
-       "<emoji:open_hands>": "👐",   
-       "<emoji:palms_up_together>": "🤲",  
-       "<emoji:handshake>": "🤝",    
-       "<emoji:folded_hands>": "🙏",
-    
-       #<emoji: Animals & Nature    
-       "<emoji:dog_face>": "🐶",     
-       "<emoji:cat_face>": "🐱",     
-       "<emoji:mouse_face>": "🐭",   
-       "<emoji:hamster>": "🐹",      
-       "<emoji:rabbit_face>": "🐰",  
-       "<emoji:fox>": "🦊",          
-       "<emoji:bear>": "🐻",         
-       "<emoji:panda>": "🐼",        
-       "<emoji:polar_bear>": "🐻‍❄️",  
-       "<emoji:koala>": "🐨",        
-       "<emoji:tiger_face>": "🐯",   
-       "<emoji:lion>": "🦁",         
-       "<emoji:cow_face>": "🐮",     
-       "<emoji:pig_face>": "🐷",     
-       "<emoji:frog>": "🐸",         
-       "<emoji:monkey_face>": "🐵",  
-       "<emoji:chicken>": "🐔",      
-       "<emoji:penguin>": "🐧",      
-       "<emoji:bird>": "🐦",         
-       "<emoji:baby_chick>": "🐤",   
-       "<emoji:hatching_chick>": "🐣",     
-       "<emoji:front_facing_baby_chick>": "🐥",                                                                                                   
-       "<emoji:duck>": "🦆",         
-       "<emoji:eagle>": "🦅",        
-       "<emoji:owl>": "🦉",          
-       "<emoji:bat>": "🦇",          
-       "<emoji:wolf>": "🐺",         
-       "<emoji:boar>": "🐗",         
-       "<emoji:horse_face>": "🐴",   
-       "<emoji:unicorn>": "🦄",      
-       "<emoji:honeybee>": "🐝",     
-       "<emoji:bug>": "🐛",          
-       "<emoji:butterfly>": "🦋",    
-       "<emoji:snail>": "🐌",        
-       "<emoji:lady_beetle>": "🐞",  
-       "<emoji:ant>": "🐜",          
-       "<emoji:mosquito>": "🦟",     
-       "<emoji:microbe>": "🦠",      
-       "<emoji:bouquet>": "💐",      
-       "<emoji:cherry_blossom>": "🌸",     
-       "<emoji:rose>": "🌹",         
-       "<emoji:hibiscus>": "🌺",     
-       "<emoji:sunflower>": "🌻",    
-       "<emoji:blossom>": "🌼",      
-       "<emoji:tulip>": "🌷",        
-       "<emoji:palm_tree>": "🌴",
-       "<emoji:cactus>": "🌵",       
-       "<emoji:herb>": "🌿",         
-       "<emoji:four_leaf_clover>": "🍀",   
-       "<emoji:maple_leaf>": "🍁",   
-       "<emoji:fallen_leaf>": "🍂",  
-       "<emoji:leaf_fluttering_in_wind>": "🍃",
+with open("./emojis.json", "r") as file:
+    emojis = json.loads(file.read())
 
-       #<emoji: Objects             
-       "<emoji:fire>": "🔥",         
-       "<emoji:droplet>": "💧",      
-       "<emoji:water_wave>": "🌊",   
-       "<emoji:jack_o_lantern>": "🎃",     
-       "<emoji:christmas_tree>": "🎄",     
-       "<emoji:fireworks>": "🎆",    
-       "<emoji:sparkler>": "🎇",     
-       "<emoji:sparkles>": "✨",     
-       "<emoji:balloon>": "🎈",      
-       "<emoji:party_popper>": "🎉", 
-       "<emoji:confetti_ball>": "🎊",
-       "<emoji:collision>": "💥",    
-       "<emoji:money_bag>": "💰",    
-       "<emoji:gem_stone>": "💎",    
-       "<emoji:crown>": "👑",        
-       "<emoji:ring>": "💍",         
-       "<emoji:light_bulb>": "💡",   
-       "<emoji:bomb>": "💣",         
-       "<emoji:smoking>": "🚬",      
-       "<emoji:coffin>": "⚰️",        
-       "<emoji:headstone>": "🪦",    
-       "<emoji:crystal_ball>": "🔮", 
-       "<emoji:prayer_beads>": "📿", 
-       "<emoji:barber_pole>": "💈",  
-       "<emoji:alembic>": "⚗️",       
-       "<emoji:telescope>": "🔭",    
-       "<emoji:microscope>": "🔬",   
-       "<emoji:hole>": "🕳",          
-       "<emoji:shopping_cart>": "🛒",
-       "<emoji:gift>": "🎁",         
-       "<emoji:red_envelope>": "🧧", 
-       "<emoji:ribbon>": "🎀",       
-       "<emoji:joystick>": "🕹",      
-       "<emoji:teddy_bear>": "🧸",   
-       "<emoji:kite>": "🪁",         
-       "<emoji:parachute>": "🪂",    
-       "<emoji:boomerang>": "🪃",    
-       "<emoji:magic_wand>": "🪄",   
-       "<emoji:yo_yo>": "🪀",        
-       "<emoji:kite>": "🪁",         
-       "<emoji:puzzle_piece>": "🧩", 
-       "<emoji:chess_pawn>": "♟",    
-       "<emoji:diamond_suit>": "♦️",  
-       "<emoji:club_suit>": "♣️",     
-       "<emoji:heart_suit>": "♥️",    
-       "<emoji:spade_suit>": "♠️",    
-       "<emoji:red_paper_lantern>": "🏮",  
-       "<emoji:notebook>": "📓",     
-       "<emoji:notebook_with_decorative_cover>": "📔",                                                                                            
-       "<emoji:ledger>": "📒",       
-       "<emoji:page_with_curl>": "📃",  
-}
+with open("./contacts.json", "r") as file:
+    contacts = json.loads(file.read())
 
 def receive_messages(name):
     global connection, priv_key
@@ -304,7 +127,8 @@ def message_loop(name):
         receive_thread.join()
         send_thread.join()
         connection.close()
-        raise KeyboardInterrupt
+        print("\nClosing messenger...")
+        exit(0)
 
 def handshake():
     global connection, connection_pub_key, priv_key
@@ -337,7 +161,7 @@ def handshake():
 
 
 
-def listen(ip):
+def listen(ip=None, contacts=None):
     global connection
 
     try:
@@ -347,11 +171,15 @@ def listen(ip):
         sock.listen(1)
 
         conn, connected_ip = sock.accept()
-        if connected_ip[0] == ip:
-            connection = conn
-            return True
+        if ip:
+            if connected_ip[0] == ip:
+                connection = conn
+                return True
+            else:
+                conn.close()
         else:
-            conn.close()
+            console.print(Text("CONNECTION ATTEMPT RECEIVED FROM " + connected_ip[0], "bold bright_green"))
+
     except (socket.timeout, OSError):
         pass
     finally:
@@ -390,6 +218,45 @@ def command_line_utility():
     while True:
         command = input(prompt)
         run_command(command)
+
+def run_command(command):
+    match command:
+        case "help":
+            display = Text()
+            display.append("Usable commands and aliases:\n", style="bold bright_white")
+            display.append("COMMAND", style="bold bright_cyan")
+            display.append(" | ALIAS | ", style="bold bright_blue")
+            display.append("PURPOSE\n\n", style="bold bright_magenta")
+            def add_command(cmd, alias, purpose):
+                display.append(cmd, style="bright_cyan")
+                display.append(" | " + alias + " | ", style="bright_blue")
+                display.append(purpose + "\n", style="bright_magenta")
+
+            add_command("cmod add <name>@<IPv4 address>", "N/A", "Create a new contact with a specified name and IPv4 address.")
+
+            console.print(display)
+
+        case "ls-c" | "ls-contacts" | "list-contacts":
+            display = Text()
+            display.append("Contacts:\n", style="bold bright_white")
+            foo = ""
+            for name, ip in contacts.items():
+                foo += f"{name} -> {ip}\n"
+            display.append(foo, style="white")
+            console.print(display)
+
+        case "clear":
+            system("clear")
+            print_header()
+            print("\n\n")
+
+        case "exit":
+            print("\nClosing messenger...")
+            exit(0)
+
+        case _:
+            print("Invalid command.")
+    return
 
 
 def print_header():
@@ -436,10 +303,6 @@ def main():
 
         match choice:
             case "1":
-                with open("./contacts.json", "r") as file:
-                    contacts = file.read()
-                contacts = json.loads(contacts)
-
                 contact = input("\n\n" + " " * 20 + "Enter contact name: ")
                 if contact not in contacts.keys():
                     console.print(Text(" " * 22 + f"Contact not '{contact}' found.", "bold bright_red"))
