@@ -133,7 +133,7 @@ def message_loop(name):
 def handshake():
     global connection, connection_pub_key, priv_key
 
-    pub_key, priv_key = genkey.genkey("ELM")
+    priv_key, pub_key = genkey.genkey()
     connection.sendall(f"START KEY EXCHANGE HANDSHAKE | {pub_key} | END KEY EXCHANGE HANDSHAKE".encode())
 
     connection.settimeout(10.0)
@@ -209,54 +209,149 @@ def connect(ip):
 
 
 def command_line_utility():
-    system("clear")
-    print_header()
-    print("\n\n")
+    try:
+        system("clear")
+        print_header()
+        print("\n\n")
 
-    prompt = "self@" + get("http://api.ipify.org").text + " #> "
+        prompt = Text("self@" + get("http://api.ipify.org").text + " !> ", style="bold dark_slate_gray1")
 
-    while True:
-        command = input(prompt)
-        run_command(command)
+        while True:
+            console.print(prompt, end="")
+            command = input("")
+            run_command(command)
+    except KeyboardInterrupt:
+        main()
 
 def run_command(command):
-    match command:
-        case "help":
-            display = Text()
-            display.append("Usable commands and aliases:\n", style="bold bright_white")
-            display.append("COMMAND", style="bold bright_cyan")
-            display.append(" | ALIAS | ", style="bold bright_blue")
-            display.append("PURPOSE\n\n", style="bold bright_magenta")
-            def add_command(cmd, alias, purpose):
-                display.append(cmd, style="bright_cyan")
-                display.append(" | " + alias + " | ", style="bright_blue")
-                display.append(purpose + "\n", style="bright_magenta")
+    try:
+        match command:
+            case "help":
+                display = Text()
+                display.append("Usable commands and aliases:\n", style="bold bright_white")
+                display.append("    In order to execute any of these commands while inside of the messenger rather than the CLU,\n     simply add a '!' directly in front of the command.\n\n", style="bright_white")
 
-            add_command("cmod add <name>@<IPv4 address>", "N/A", "Create a new contact with a specified name and IPv4 address.")
+                display.append("COMMAND", style="bold bright_cyan")
+                display.append(" | ALIAS | ", style="bold bright_blue")
+                display.append("PURPOSE\n\n", style="bold bright_magenta")
+                def add_command(cmd, alias, purpose):
+                    display.append(cmd, style="bright_cyan")
+                    display.append(" | " + alias + " | ", style="bright_blue")
+                    display.append(purpose + "\n", style="bright_magenta")
 
-            console.print(display)
+                display.append("conn utility (connection-tools) [\n", style="bold light_goldenrod1")
+                add_command("    conn <name>", "N/A", "Same as messaging a contact through the main menu.")
+                add_command("    conn once <IPv4 address>", "N/A", "Connect to an IP address without adding it to your contacts.")
+                display.append("]\n", style="bold light_goldenrod1")
 
-        case "ls-c" | "ls-contacts" | "list-contacts":
-            display = Text()
-            display.append("Contacts:\n", style="bold bright_white")
-            foo = ""
-            for name, ip in contacts.items():
-                foo += f"{name} -> {ip}\n"
-            display.append(foo, style="white")
-            console.print(display)
+                display.append("\ncmod utility (contact-modifier) [\n", style="bold chartreuse1")
+                add_command("    cmod add <name>@<IPv4 address>", "N/A", "Create a new contact with a specified name and IPv4 address.")
+                add_command("    cmod del <name>", "N/A", "Delete a contact from the contact book by name.")
+                add_command("    cmod altname <name> <new name>", "N/A", "Change the name of a contact.")
+                add_command("    cmod altip <name> <new IPv4 address>", "N/A", "Change the IPv4 address of the contact.")
+                display.append("]\n", style="bold chartreuse1")
 
-        case "clear":
-            system("clear")
-            print_header()
-            print("\n\n")
+                display.append("\nOther contact utils [\n", style="bold cyan2")
+                display.append("]\n", style="bold cyan2")
 
-        case "exit":
-            print("\nClosing messenger...")
-            exit(0)
+                display.append("\nCommand execution (external, or without this CLU) [\n", style="bold sky_blue1")
+                add_command("    $<bash/zsh command to be executed>", "N/A", "Execute a terminal command, returning any output.")
+                add_command("    !<command to be executed>", "N/A", "Execute a CLU command while not in the CLU (can include a bash execution using '!$<cmd>').")
+                display.append("]\n", style="bold sky_blue1")
 
-        case _:
-            print("Invalid command.")
-    return
+                console.print(display)
+
+            case "ls-c" | "ls-contacts" | "list-contacts":
+                display = Text()
+                display.append("Contacts:\n", style="bold bright_white")
+                foo = ""
+                for name, ip in contacts.items():
+                    foo += f"{name} -> {ip}\n"
+                display.append(foo, style="white")
+                console.print(display)
+
+            case x if x.startswith("conn "):
+                command = command.removeprefix("conn ")
+                if command.startswith("once "):
+                    ip = command.removeprefix("once ")
+                    if len(ip.split(".")) != 4:
+                        console.print(Text("Invalid IPv4 address format! Format is 4 series of 3 digit numbers, separated by periods.", style="red"))
+                        return
+
+                    print(f"Attempting connection to {ip}:4500 | {datetime.now(UTC)} UTC")
+
+                    while not connection:
+                        if listen(ip):
+                            break
+                        if connect(ip):
+                            break
+
+                    print(f"Successfully connected to {ip}:4500 | {datetime.now(UTC)} UTC")
+                    handshake()
+                    message_loop("ANONYMOUS")
+                else:
+                    contact = command
+                    if contact not in contacts.keys():
+                        console.print(Text(f"Contact not '{contact}' found.", "bold bright_red"))
+                        return
+                    else:
+                        ip = contacts[contact]
+                        print(f"Attempting connection to {contact}@{ip}:4500 | {datetime.now(UTC)} UTC")
+
+                        while not connection:
+                            if listen(ip):
+                                break
+                            if connect(ip):
+                                break
+
+                        print(f"Successfully connected to {contact}@{ip}:4500 | {datetime.now(UTC)} UTC")
+                        handshake()
+                        message_loop(contact)
+
+            case x if x.startswith("cmod "):
+                command = command.removeprefix("cmod ")
+                if command.startswith("add "):
+                    command = command.removeprefix("add ")
+                    command = command.split("@")
+                    if len(command) != 2:
+                        console.print(Text("Invalid contact format! Format is <name>@<IPv4 address>. The 'help' command brings you to a help menu.", style="red"))
+                        return
+                    name, ip = command
+                    if len(ip.split(".")) != 4:
+                        console.print(Text("Invalid IPv4 address format! Format is 4 series of 3 digit numbers, separated by periods.", style="red"))
+                        return
+                    contacts[name] = ip
+                    with open("./contacts.json", "w") as file:
+                        file.write(json.dumps(contacts))
+
+                    console.print(Text(f"Contact {name}@{ip} added successfully!", style="bold green"))
+
+                elif command.startswith("del "):
+                    name = command.removeprefix("del ")
+                    if name in contacts:
+                        del contacts[name]
+                        with open("./contacts.json", "w") as file:
+                            file.write(json.dumps(contacts))
+
+                        console.print(Text(f"Contact {name} deleted successfully!", style="bold green"))
+                    else:
+                        console.print(Text(f"Contact not '{contact}' found.", "bold bright_red"))
+
+            case "clear":
+                system("clear")
+                print_header()
+                print("\n\n")
+
+            case "exit":
+                print("\nClosing messenger...")
+                exit(0)
+
+            case _:
+                print("Invalid command.")
+        return
+    except KeyboardInterrupt:
+        print("\n")
+        return
 
 
 def print_header():
@@ -293,9 +388,9 @@ def main():
         console.print(Text(choice_tree, "blue_violet"), justify="left")
 
         choice = ""
-        while choice not in ["1", "2", "3"]:
+        while choice not in ["1", "2", "3", "4"]:
             choice = input(" " * 20 + "> ")
-            if choice not in ["1", "2", "3"]:
+            if choice not in ["1", "2", "3", "4"]:
                 print("Invalid choice.")
                 sleep(2)
                 print("\033[A\033[K", end="", flush=True)
