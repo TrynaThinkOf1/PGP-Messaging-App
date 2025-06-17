@@ -178,7 +178,8 @@ def listen(ip=None, contacts=None):
             else:
                 conn.close()
         else:
-            console.print(Text("CONNECTION ATTEMPT RECEIVED FROM " + connected_ip[0], "bold bright_green"))
+            connection = conn
+            return True, connected_ip
 
     except (socket.timeout, OSError):
         pass
@@ -416,6 +417,31 @@ def main():
                     print(f"Successfully connected to {contact}@{ip}:4500 | {datetime.now(UTC)} UTC")
                     handshake()
                     message_loop(contact)
+
+            case "2":
+                system("clear")
+                print_header()
+                print("\n\n")
+                console.print(Text("Listening for connections...", "bright_blue"))
+                while True:
+                    c = listen()
+                    if c:
+                        connected_ip = c[1]
+                        console.print(Text("CONNECTION ATTEMPT RECEIVED FROM " + connected_ip[0], "bold bright_green"))
+                        if connected_ip in contacts.values():
+                            console.print(Text(f"This connection appears to be from your contact '{[name for name, ip in contacts.items() if ip == connected_ip][0]}'.", "bright_blue"))
+                        else:
+                            console.print(Text("The IPv4 address from the connection does not appear in your contacts.", "bright_blue"))
+                        connect = input("Would you like to connect (y/n): ")
+                        if connect != "y":
+                            connection.close()
+                            continue
+                        else:
+                            print(f"Successfully connected to {connected_ip}:4500 | {datetime.now(UTC)} UTC")
+                            handshake()
+                            message_loop(connected_ip)
+                    else:
+                        continue
 
             case "3":
                 command_line_utility()
