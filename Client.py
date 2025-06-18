@@ -338,6 +338,24 @@ def run_command(command):
                     else:
                         console.print(Text(f"Contact not '{contact}' found.", "bold bright_red"))
 
+                elif command.startswith("altname "):
+                    command = command.removeprefix("altname ")
+                    command = command.split(" ")
+                    if len(command) != 2:
+                        console.print(Text("Invalid command format, 'cmod altname <contact name> <new contact name>'.", "red"))
+                        return
+                    contact, new_name = command
+                    if contact in contacts.keys():
+                        ip = contacts[contact]
+                        del contacts[contact]
+                        contacts[new_name] = ip
+                        with open("./contacts.json", "w") as file:
+                            file.write(json.dumps(contacts))
+                        console.print(Text(f"Contact changed from {contact}@{ip} -> {new_name}@{ip} successfully!", style="bold green"))
+                        return
+                    else:
+                        console.print(Text(f"Contact '{contact}' not found.", "red"))
+
             case "clear":
                 system("clear")
                 print_header()
