@@ -188,7 +188,7 @@ def listen(ip=None, contacts=None):
         sock.close()
     return False
 
-def connect(ip):
+def send_connect_req(ip):
     global connection
 
     try:
@@ -285,7 +285,7 @@ def run_command(command):
                     while not connection:
                         if listen(ip):
                             break
-                        if connect(ip):
+                        if send_connect_req(ip):
                             break
 
                     print(f"Successfully connected to {ip}:4500 | {datetime.now(UTC)} UTC")
@@ -303,7 +303,7 @@ def run_command(command):
                         while not connection:
                             if listen(ip):
                                 break
-                            if connect(ip):
+                            if send_connect_req(ip):
                                 break
 
                         print(f"Successfully connected to {contact}@{ip}:4500 | {datetime.now(UTC)} UTC")
@@ -455,7 +455,7 @@ def main():
                     while not connection:
                         if listen(ip):
                             break
-                        if connect(ip):
+                        if send_connect_req(ip):
                             break
 
                     print(f"Successfully connected to {contact}@{ip}:4500 | {datetime.now(UTC)} UTC")
@@ -463,29 +463,32 @@ def main():
                     message_loop(contact)
 
             case "2":
-                system("clear")
-                print_header()
-                print("\n\n")
-                console.print(Text("Listening for connections...", "bright_blue"))
-                while True:
-                    c = listen()
-                    if c:
-                        connected_ip = c[1]
-                        console.print(Text("CONNECTION ATTEMPT RECEIVED FROM " + connected_ip[0], "bold bright_green"))
-                        if connected_ip in contacts.values():
-                            console.print(Text(f"This connection appears to be from your contact '{[name for name, ip in contacts.items() if ip == connected_ip][0]}'.", "bright_blue"))
+                try:
+                    system("clear")
+                    print_header()
+                    print("\n\n")
+                    console.print(Text("Listening for connections...", "bright_blue"))
+                    while True:
+                        c = listen()
+                        if c:
+                            connected_ip = c[1]
+                            console.print(Text("CONNECTION ATTEMPT RECEIVED FROM " + connected_ip[0], "bold bright_green"))
+                            if connected_ip in contacts.values():
+                                console.print(Text(f"This connection appears to be from your contact '{[name for name, ip in contacts.items() if ip == connected_ip][0]}'.", "bright_blue"))
+                            else:
+                                console.print(Text("The IPv4 address from the connection does not appear in your contacts.", "bright_blue"))
+                            connect = input("Would you like to connect (y/n): ")
+                            if connect != "y":
+                                connection.close()
+                                continue
+                            else:
+                                print(f"Successfully connected to {connected_ip}:4500 | {datetime.now(UTC)} UTC")
+                                handshake()
+                                message_loop(connected_ip)
                         else:
-                            console.print(Text("The IPv4 address from the connection does not appear in your contacts.", "bright_blue"))
-                        connect = input("Would you like to connect (y/n): ")
-                        if connect != "y":
-                            connection.close()
                             continue
-                        else:
-                            print(f"Successfully connected to {connected_ip}:4500 | {datetime.now(UTC)} UTC")
-                            handshake()
-                            message_loop(connected_ip)
-                    else:
-                        continue
+                except KeyboardInterrupt:
+                    main()
 
             case "3":
                 command_line_utility()
