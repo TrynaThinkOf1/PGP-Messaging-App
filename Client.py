@@ -2,6 +2,7 @@ import socket
 import threading
 import json
 import re
+import subprocess
 from requests import get
 from datetime import datetime, UTC
 from time import sleep
@@ -355,6 +356,31 @@ def run_command(command):
                         return
                     else:
                         console.print(Text(f"Contact '{contact}' not found.", "red"))
+
+                elif command.startswith("altip "):
+                    command = command.removeprefix("altip ")
+                    command = command.split(" ")
+                    if len(command) != 2:
+                        console.print(Text("Invalid command format, 'cmod altip <contact name> <new IPv4 address>'.", "red"))
+                        return
+                    contact, new_ip = command
+                    if contact in contacts.keys():
+                        ip = contacts[contact]
+                        del contacts[contact]
+                        contacts[contact] = new_ip
+                        with open("./contacts.json", "w") as file:
+                            file.write(json.dumps(contacts))
+                        console.print(Text(f"Contact changed from {contact}@{ip} -> {contact}@{new_ip} successfully!", style="bold green"))
+                    else:
+                        console.print(Text(f"Contact '{contact}' not found.", "red"))
+
+            case x if x.startswith("$"):
+                command = command.removeprefix("$")
+                try:
+                    output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
+                    console.print(Text(output.decode(), style="bright_blue"))
+                except subprocess.CalledProcessError as e:
+                    console.print(Text(e.output.decode(), style="bright_red"))
 
             case "clear":
                 system("clear")
