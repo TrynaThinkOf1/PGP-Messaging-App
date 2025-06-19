@@ -137,7 +137,7 @@ def handshake():
     priv_key, pub_key = genkey.genkey()
     connection.sendall(f"START KEY EXCHANGE HANDSHAKE | {pub_key} | END KEY EXCHANGE HANDSHAKE".encode())
 
-    connection.settimeout(10.0)
+    connection.settimeout(None)
     handshake = ""
     while True:
         data = connection.recv(1024).decode()
@@ -147,9 +147,12 @@ def handshake():
         if handshake.endswith("END KEY EXCHANGE HANDSHAKE"):
             break
 
+    handshake = handshake.strip()
     if handshake.startswith("START KEY EXCHANGE HANDSHAKE |") and handshake.endswith(
             "| END KEY EXCHANGE HANDSHAKE"):
         connection_pub_key = handshake[30:-28]
+        print(connection_pub_key)
+        sleep(60)
         console.print(Text("    Handshake successful.", "bold bright_green"))
         return
     else:
@@ -446,8 +449,8 @@ def main():
                 contact = input("\n\n" + " " * 20 + "Enter contact name: ")
                 if contact not in contacts.keys():
                     console.print(Text(" " * 22 + f"Contact not '{contact}' found.", "bold bright_red"))
-                    console.print(Text(" " * 24 + "Redirecting to the command-line utility...", "red"))
-                    command_line_utility()
+                    sleep(2)
+                    main()
                 else:
                     ip = contacts[contact]
                     print(f"Attempting connection to {contact}@{ip}:4500 | {datetime.now(UTC)} UTC")
